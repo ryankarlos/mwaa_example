@@ -1,0 +1,5 @@
+pandas
+sagemaker
+boto3
+s3fs
+fastparquet
