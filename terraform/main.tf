@@ -1,3 +1,4 @@
+
 resource "aws_mwaa_environment" "airflow" {
   dag_s3_path                     = var.airflow_file_paths.dags
   environment_class               = var.environment_class
@@ -33,12 +34,8 @@ resource "aws_mwaa_environment" "airflow" {
     }
   }
   network_configuration {
-    security_group_ids = var.security_group_ids
-    subnet_ids         = var.subnet_ids
+    security_group_ids = module.vpc.default_security_group_id
+    subnet_ids         = module.vpc.private_subnets
   }
 }
 
-
-resource "aws_s3_bucket" "dag_bucket" {
-  bucket = var.dag_bucket
-}

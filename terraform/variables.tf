@@ -5,19 +5,8 @@ variable "name" {
 }
 
 variable "region" {
-  default = "eu-west-1"
+  default = "us-east-1"
   type    = string
-}
-
-
-variable "subnet_ids" {
-  description = "list of private subnet ids to associate with airflow env"
-  type        = list(string)
-}
-
-variable "security_group_ids" {
-  description = "security group ids"
-  type        = list(string)
 }
 
 
@@ -81,4 +70,11 @@ variable "airflow_file_paths" {
   default     = { "dags" : "dags", "requirements" : "requires/requirements.txt" }
   type        = map(string)
 
+}
+
+
+variable "vpc_cidr" {
+  description = "VPC CIDR for MWAA"
+  type        = string
+  default     = "10.1.0.0/16"
 }
