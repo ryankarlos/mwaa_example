@@ -1,5 +1,10 @@
 pandas
-sagemaker
 boto3
 s3fs
 fastparquet
+psycopg2-binary
+pandas
+redshift_connector
+apache-airflow-providers-amazon
+apache-airflow-providers-mysql
+apache-airflow-providers-common-sql
