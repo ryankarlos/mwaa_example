@@ -1,7 +1,4 @@
-pandas
 boto3
-s3fs
-fastparquet
 psycopg2-binary
 pandas
 redshift_connector

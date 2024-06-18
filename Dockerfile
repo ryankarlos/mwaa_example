@@ -1,4 +1,5 @@
-FROM python
-RUN pip install boto3 psycopg2-binary redshift_connector pandas
-COPY redshift_conn.py .
-CMD [ "python", "redshift.py" ]
+FROM public.ecr.aws/lambda/python:3.11
+COPY dags/requirements.txt .
+RUN pip install -r requirements.txt
+COPY dags/utils/execute_redshift_query.py .
+CMD [ "python", "execute_redshift_query.py" ]
