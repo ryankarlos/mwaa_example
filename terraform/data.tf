@@ -1,8 +1,10 @@
 
 locals {
-  bucket_arn         = aws_s3_bucket.dag_bucket.arn
+  bucket_arn         = aws_s3_bucket.bucket_mwaa.arn
   bucket_objects_arn = join("/", [local.bucket_arn, "*"])
+  account_id = data.aws_caller_identity.current.account_id
 }
+
 
 data "aws_caller_identity" "current" {}
 
