@@ -16,8 +16,8 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
   }
   statement {
     actions   = ["s3:*"]
-    resources = [local.bucket_arn, local.bucket_objects_arn]
     effect    = "Allow"
+    resources = ["*"]
   }
   statement {
     actions = [
@@ -142,4 +142,19 @@ data "aws_iam_policy_document" "assume_role_entities" {
 
 data "aws_iam_policy" "ECSFullAccess" {
   arn ="arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+
+
+data "http" "local_ip" {
+  url = "http://ipinfo.io/ip"
+}
+
+
+locals {
+  azs         = slice(data.aws_availability_zones.available.names, 0, 2)
 }

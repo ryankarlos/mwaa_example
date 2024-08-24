@@ -78,3 +78,17 @@ variable "vpc_cidr" {
   type        = string
   default     = "10.1.0.0/16"
 }
+
+
+variable "redshift_nodes" {
+  description = "number of redshift cluster nodes"
+  type        = number
+  default     = 2
+}
+
+
+variable "redshift_node_type" {
+  description = "redshift node type"
+  type        = string
+  default     = "dc2.large"
+}

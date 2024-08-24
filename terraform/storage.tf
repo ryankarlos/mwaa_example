@@ -6,6 +6,13 @@ resource "aws_s3_bucket" "bucket_data" {
 }
 
 
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.bucket_mwaa.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket" "bucket_mwaa" {
   bucket              = var.dag_bucket
   tags = {
@@ -16,5 +23,19 @@ resource "aws_s3_bucket" "bucket_mwaa" {
     Environment = "test"
     Name        = var.dag_bucket
   }
+}
+
+
+resource "aws_s3_object" "object1" {
+  for_each = fileset("dags/", "*")
+  bucket   = aws_s3_bucket.bucket_mwaa.id 
+  key      = "dags/${each.value}"
+  source   = "../dags/${each.value}"
+}
+
+resource "aws_s3_object" "reqs" {
+  bucket   = aws_s3_bucket.bucket_mwaa.id 
+  key      = "requires/requirements.txt"
+  source   = "../requirements.txt"
 }
 

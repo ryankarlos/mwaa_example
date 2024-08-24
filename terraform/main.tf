@@ -1,5 +1,4 @@
 
-
 resource "aws_mwaa_environment" "mwaa_redshift" {
   dag_s3_path                      = "dags/"
   environment_class                = var.environment_class
@@ -35,7 +34,7 @@ resource "aws_mwaa_environment" "mwaa_redshift" {
     }
   }
   network_configuration {
-    security_group_ids = module.vpc.default_security_group_id
+    security_group_ids = [aws_security_group.security_group.id]
     subnet_ids         = module.vpc.private_subnets
   }
 }
@@ -59,10 +58,10 @@ resource "aws_ecs_cluster" "mwaa_ecs" {
 resource "aws_ecs_task_definition" "ecs_task_def" {
   family                   = "ecs-task-def"
   requires_compatibilities = ["FARGATE"]
+  cpu              = 1024
+  memory           = 3072
   container_definitions = jsonencode([{
     name        = "redshift"
-    cpu              = 1024
-    memory           = 3072
     essential        = true
     image            = join(":", [aws_ecr_repository.ecr_repo.repository_url, "latest"])
     logConfiguration = {
@@ -76,8 +75,8 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
     }
   }])
   network_mode             = "awsvpc"
-  task_role_arn            = "arn:aws:iam::${local.account_id}:role/ecsTaskRole"
-  execution_role_arn       = "arn:aws:iam::${local.account_id}:role/ecsTaskExecutionRole"
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
@@ -89,12 +88,12 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_subnet_group_name            = "default"
   cluster_type                         = "multi-node"
   database_name                        = "dev"
-  iam_roles                            = ["arn:aws:iam:::role/RedshiftRole", "arn:aws:iam::${local.account_id}:role/aws-service-role/redshift.amazonaws.com/AWSServiceRoleForRedshift"]
+  iam_roles                            = [aws_iam_role.redshift_role.arn]
   master_username                      = "awsuser"
   manage_master_password               = true
-  node_type                            = "dc2.large"
-  number_of_nodes                      = 2
-  vpc_security_group_ids               = ["sg-0afdf2d5ce4c8ed3e"]
+  node_type                            = var.redshift_node_type
+  number_of_nodes                      = var.redshift_nodes
+  vpc_security_group_ids               = [aws_security_group.security_group.id]
 }
 
 
