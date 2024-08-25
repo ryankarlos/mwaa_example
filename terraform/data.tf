@@ -2,7 +2,7 @@
 locals {
   bucket_arn         = aws_s3_bucket.bucket_mwaa.arn
   bucket_objects_arn = join("/", [local.bucket_arn, "*"])
-  account_id = data.aws_caller_identity.current.account_id
+  account_id         = data.aws_caller_identity.current.account_id
 }
 
 
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
       "ecs:RunTask",
       "logs:DescribeLogGroups",
     ]
-    effect   = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
   statement {
@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
       "sqs:ReceiveMessage",
       "sqs:SendMessage",
     ]
-    effect   = "Allow"
+    effect    = "Allow"
     resources = ["arn:aws:sqs:${var.region}:*:airflow-celery-*"]
   }
   statement {
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
       values   = ["ecs-tasks.amazonaws.com"]
       variable = "iam:PassedToService"
     }
-    effect   = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
   statement {
@@ -78,49 +78,49 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
       "kms:PutKeyPolicy",
     ]
     condition {
-      test     = "StringEquals"
-      values   = [
-          "sqs.eu-west-1.amazonaws.com",
-          "s3.eu-west-1.amazonaws.com",
-        ]
+      test = "StringEquals"
+      values = [
+        "sqs.eu-west-1.amazonaws.com",
+        "s3.eu-west-1.amazonaws.com",
+      ]
       variable = "kms:ViaService"
     }
-    effect   = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
   statement {
     actions = [
-                "cloudwatch:PutMetricData",
-                "sts:AssumeRole"
-            ]
+      "cloudwatch:PutMetricData",
+      "sts:AssumeRole"
+    ]
     resources = ["*"]
-    effect = "Allow"
+    effect    = "Allow"
   }
   statement {
-    actions= [
-        "secretsmanager:CancelRotateSecret",
-        "secretsmanager:CreateSecret",
-        "secretsmanager:DeleteSecret",
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetRandomPassword",
-        "secretsmanager:GetResourcePolicy",
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:ListSecretVersionIds",
-        "secretsmanager:ListSecrets",
-        "secretsmanager:PutSecretValue",
-        "secretsmanager:RemoveRegionsFromReplication",
-        "secretsmanager:ReplicateSecretToRegions",
-        "secretsmanager:RestoreSecret",
-        "secretsmanager:RotateSecret",
-        "secretsmanager:StopReplicationToReplica",
-        "secretsmanager:UpdateSecret",
-        "secretsmanager:UpdateSecretVersionStage"
+    actions = [
+      "secretsmanager:CancelRotateSecret",
+      "secretsmanager:CreateSecret",
+      "secretsmanager:DeleteSecret",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetRandomPassword",
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecretVersionIds",
+      "secretsmanager:ListSecrets",
+      "secretsmanager:PutSecretValue",
+      "secretsmanager:RemoveRegionsFromReplication",
+      "secretsmanager:ReplicateSecretToRegions",
+      "secretsmanager:RestoreSecret",
+      "secretsmanager:RotateSecret",
+      "secretsmanager:StopReplicationToReplica",
+      "secretsmanager:UpdateSecret",
+      "secretsmanager:UpdateSecretVersionStage"
     ]
     resources = [
-        "arn:aws:secretsmanager:*:*:airflow/connections/*",
-        "arn:aws:secretsmanager:*:*:airflow/variables/*",
+      "arn:aws:secretsmanager:*:*:airflow/connections/*",
+      "arn:aws:secretsmanager:*:*:airflow/variables/*",
     ]
-    effect =  "Allow"
+    effect = "Allow"
   }
 }
 
@@ -128,12 +128,12 @@ data "aws_iam_policy_document" "assume_role_entities" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
-      type        = "Service"
+      type = "Service"
       identifiers = [
-                    "airflow.amazonaws.com",
-                    "airflow-env.amazonaws.com",
-                    "ecs-tasks.amazonaws.com"
-                ]
+        "airflow.amazonaws.com",
+        "airflow-env.amazonaws.com",
+        "ecs-tasks.amazonaws.com"
+      ]
     }
     effect = "Allow"
   }
@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "assume_role_entities" {
 
 
 data "aws_iam_policy" "ECSFullAccess" {
-  arn ="arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+  arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
 }
 
 data "aws_availability_zones" "available" {
@@ -156,5 +156,5 @@ data "http" "local_ip" {
 
 
 locals {
-  azs         = slice(data.aws_availability_zones.available.names, 0, 2)
+  azs = slice(data.aws_availability_zones.available.names, 0, 2)
 }

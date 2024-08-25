@@ -1,19 +1,19 @@
 resource "aws_iam_role" "mwaa_role" {
-  name = "mwaaRole"
-  path               = "/service-role/airflow.amazonaws.com/"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_entities.json
+  name                = "mwaa_role"
+  path                = "/service-role/airflow.amazonaws.com/"
+  assume_role_policy  = data.aws_iam_policy_document.assume_role_entities.json
   managed_policy_arns = [data.aws_iam_policy.ECSFullAccess.arn]
 }
 
 
 resource "aws_iam_role_policy" "mwaa_policy" {
-  name = "mwaa_policy"
+  name   = "mwaa_policy"
   policy = data.aws_iam_policy_document.mwaa_role_inline_policies.json
-  role = aws_iam_role.mwaa_role.id
+  role   = aws_iam_role.mwaa_role.id
 }
 
 resource "aws_iam_role" "redshift_role" {
-  name               = "RedshiftRole"
+  name               = "redshift-role"
   assume_role_policy = data.aws_iam_policy_document.redshift_assume_role_policy.json
 }
 
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy_attachment" "redshift_s3_full_access" {
 
 # ECS Task Role
 resource "aws_iam_role" "ecs_task_role" {
-  name               = "escTaskRole"
+  name               = "ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role_policy.json
 }
 
@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_role_redshift" {
 
 # ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "ecsTaskExecutionRole"
+  name               = "ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role_policy.json
 }
 

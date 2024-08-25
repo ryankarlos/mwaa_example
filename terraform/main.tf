@@ -1,14 +1,19 @@
+import {
+  to = aws_mwaa_environment.mwaa_redshift
+  id = "demo-mwaa"
+}
+
 
 resource "aws_mwaa_environment" "mwaa_redshift" {
-  dag_s3_path                      = "dags/"
-  environment_class                = var.environment_class
-  execution_role_arn               = aws_iam_role.mwaa_role.arn
+  dag_s3_path                     = "dags/"
+  environment_class               = var.environment_class
+  execution_role_arn              = aws_iam_role.mwaa_role.arn
   max_workers                     = var.worker_scaling.max_workers
   min_workers                     = var.worker_scaling.min_workers
   name                            = var.name
   requirements_s3_path            = var.airflow_file_paths.requirements
   schedulers                      = var.number_schedulers
-  source_bucket_arn                = aws_s3_bucket.bucket_mwaa.arn
+  source_bucket_arn               = aws_s3_bucket.bucket_mwaa.arn
   webserver_access_mode           = var.access_mode
   weekly_maintenance_window_start = var.maintenance_window
   logging_configuration {
@@ -42,10 +47,10 @@ resource "aws_mwaa_environment" "mwaa_redshift" {
 
 
 resource "aws_ecs_cluster" "mwaa_ecs" {
-  name     = "mwaa-ecs"
+  name = "mwaa-ecs"
   configuration {
     execute_command_configuration {
-      logging    = "DEFAULT"
+      logging = "DEFAULT"
     }
   }
   setting {
@@ -58,12 +63,12 @@ resource "aws_ecs_cluster" "mwaa_ecs" {
 resource "aws_ecs_task_definition" "ecs_task_def" {
   family                   = "ecs-task-def"
   requires_compatibilities = ["FARGATE"]
-  cpu              = 1024
-  memory           = 3072
+  cpu                      = 1024
+  memory                   = 3072
   container_definitions = jsonencode([{
-    name        = "redshift"
-    essential        = true
-    image            = join(":", [aws_ecr_repository.ecr_repo.repository_url, "latest"])
+    name      = "redshift"
+    essential = true
+    image     = join(":", [aws_ecr_repository.ecr_repo.repository_url, "latest"])
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -74,9 +79,9 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
       }
     }
   }])
-  network_mode             = "awsvpc"
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  network_mode       = "awsvpc"
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
@@ -84,21 +89,26 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
 }
 
 resource "aws_redshift_cluster" "redshift_cluster" {
-  cluster_identifier                   = "redshift-cluster-1"
-  cluster_subnet_group_name            = "default"
-  cluster_type                         = "multi-node"
-  database_name                        = "dev"
-  iam_roles                            = [aws_iam_role.redshift_role.arn]
-  master_username                      = "awsuser"
-  manage_master_password               = true
-  node_type                            = var.redshift_node_type
-  number_of_nodes                      = var.redshift_nodes
-  vpc_security_group_ids               = [aws_security_group.security_group.id]
+  cluster_identifier        = "redshift-cluster-1"
+  cluster_type              = "multi-node"
+  database_name             = "dev"
+  iam_roles                 = [aws_iam_role.redshift_role.arn]
+  master_username           = "awsuser"
+  manage_master_password    = true
+  node_type                 = var.redshift_node_type
+  number_of_nodes           = var.redshift_nodes
+  vpc_security_group_ids    = [aws_security_group.security_group.id]
+  cluster_subnet_group_name = aws_redshift_subnet_group.this.name
 }
 
 
+resource "aws_redshift_subnet_group" "this" {
+  name       = "redshift-subnet-group"
+  subnet_ids = ["${element(module.vpc.public_subnets, 0)}"]
+}
+
 resource "aws_ecr_repository" "ecr_repo" {
-  name                 = "ecs-redshift"
+  name = "ecs-redshift"
   image_scanning_configuration {
     scan_on_push = true
   }
