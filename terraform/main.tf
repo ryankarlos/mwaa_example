@@ -83,6 +83,7 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
   }
 }
 
+
 resource "aws_redshift_cluster" "redshift_cluster" {
   cluster_identifier        = "redshift-cluster-1"
   cluster_type              = "multi-node"
@@ -94,6 +95,8 @@ resource "aws_redshift_cluster" "redshift_cluster" {
   number_of_nodes           = var.redshift_nodes
   vpc_security_group_ids    = [aws_security_group.security_group.id]
   cluster_subnet_group_name = aws_redshift_subnet_group.this.name
+  automated_snapshot_retention_period = 0
+  skip_final_snapshot =  true
 }
 
 
