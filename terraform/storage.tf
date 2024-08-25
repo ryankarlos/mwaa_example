@@ -25,12 +25,24 @@ resource "aws_s3_bucket" "bucket_mwaa" {
   }
 }
 
+resource "aws_s3_object" "dataset" {
+  bucket   = aws_s3_bucket.bucket_data.id
+  key      = "sample_housing/housing.csv"
+  source   = "../data/housing.csv"
+}
 
-resource "aws_s3_object" "object1" {
-  for_each = fileset("../dags/", "*")
+
+resource "aws_s3_object" "dag_main_script" {
   bucket   = aws_s3_bucket.bucket_mwaa.id
-  key      = "dags/${each.value}"
-  source   = "../dags/${each.value}"
+  key      = "dags/dag_redshift.py"
+  source   = "../dags/dag_redshift.py"
+}
+
+
+resource "aws_s3_object" "dag_utils" {
+  bucket   = aws_s3_bucket.bucket_mwaa.id
+  key      = "dags/utils/execute_redshift_query.py"
+  source   = "../dags/utils/execute_redshift_query.py"
 }
 
 resource "aws_s3_object" "reqs" {

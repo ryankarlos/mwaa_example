@@ -98,6 +98,13 @@ data "aws_iam_policy_document" "mwaa_role_inline_policies" {
   }
   statement {
     actions = [
+      "ssm:GetParameter",
+    ]
+    resources = ["*"]
+    effect    = "Allow"
+  }
+  statement {
+    actions = [
       "secretsmanager:CancelRotateSecret",
       "secretsmanager:CreateSecret",
       "secretsmanager:DeleteSecret",
