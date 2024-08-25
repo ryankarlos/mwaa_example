@@ -1,8 +1,3 @@
-import {
-  to = aws_mwaa_environment.mwaa_redshift
-  id = "demo-mwaa"
-}
-
 
 resource "aws_mwaa_environment" "mwaa_redshift" {
   dag_s3_path                     = "dags/"
