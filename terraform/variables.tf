@@ -92,3 +92,4 @@ variable "redshift_node_type" {
   type        = string
   default     = "dc2.large"
 }
+

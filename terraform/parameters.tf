@@ -6,8 +6,8 @@ resource "aws_ssm_parameter" "ecs_params" {
   {
     "cluster_name": aws_ecs_cluster.mwaa_ecs.name , 
     "service": "ecs-service", 
-    "container_name": "redshift", 
-    "launch_type": "FARGATE", 
+    "container_name": aws_ecs_task_definition.ecs_task_def.container_definitions.name, 
+    "launch_type": element(aws_ecs_task_definition.ecs_task_def.requires_compatibilities, 0) 
     "task_definition_arn": aws_ecs_task_definition.ecs_task_def.arn,  
     "logs_group":  aws_ecs_task_definition.ecs_task_def.container_definitions.logConfiguration.options["awslogs-group"]
     "logs_stream_prefix": "ecs/redshift"
@@ -57,7 +57,7 @@ resource "aws_ssm_parameter" "port" {
   name        = "/mwaa/redshift/PORT"
   description = "Redshift port"
   type        = "String"
-  value       = "5439"
+  value       = tostring(aws_redshift_cluster.redshift_cluster.port)
 
 }
 
@@ -97,16 +97,4 @@ resource "aws_ssm_parameter" "sql_params" {
   }
   EOF
 
-}
-
-
-import {
-  id = "/mwaa/redshift/SQL_PARAMS"
-  to = aws_ssm_parameter.sql_params
-}
-
-
-import {
-  id = "/mwaa/redshift/S3_URI"
-  to = aws_ssm_parameter.s3_uri
 }
