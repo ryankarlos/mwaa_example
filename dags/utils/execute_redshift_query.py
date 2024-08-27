@@ -23,8 +23,11 @@ def python_connector_redshift(ecs_query=False):
         host=get_ssm_params("HOST"),
         database=get_ssm_params("DB"),
         port=get_ssm_params("PORT"),
-        user=secrets['username'],
-        password=secrets['password']) as conn:
+        db_user='awsuser',
+        password='',
+        user='', 
+        cluster_identifier=get_ssm_params("CLUSTER_ID"),
+        profile='default') as conn:
         sql_params = json.loads(get_ssm_params("SQL_PARAMS"))
         # needs to be included to commit the transactions to table
         # otherwise you will empty rows when uery from redshift query editor
